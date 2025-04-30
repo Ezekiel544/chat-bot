@@ -1,0 +1,9 @@
+@import "tailwindcss";
+/* @import "@fontsource/poppins"; 
+@import "@fontsource/poppins/700.css";  */
+
+
+.border{
+  border-radius: 20px;
+}
+/* bg-gradient-to-br from-blue-50 to-white */
