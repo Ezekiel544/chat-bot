@@ -7,3 +7,6 @@
   border-radius: 20px;
 }
 /* bg-gradient-to-br from-blue-50 to-white */
+body{
+  overflow-x: hidden;
+}
