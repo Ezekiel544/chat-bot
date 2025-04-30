@@ -81,9 +81,9 @@ const About = () => {
               viewport={{ once: false }}// Animate every time in view
               className="p-6 bg-white/80 backdrop-blur-md rounded-xl shadow-lg border border-gray-200 hover:shadow-xl transition-shadow duration-300 w-full md:w-auto flex flex-col items-center sm:items-start gap-4 text-center sm:text-left"  // Stack on small, align on larger
             >
-               <div className="flex justify-center">
+              <div className="flex justify-center">
                 <MessageCircle className="w-8 h-8 text-purple-500 flex-shrink-0 mb-2 sm:mb-0" />  {/* Icon on top on small */}
-               </div>
+              </div>
               <div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">Our Vision</h3>
                 <p className="text-gray-600">
