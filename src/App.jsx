@@ -69,19 +69,19 @@ const App = () => {
       const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
         method: 'POST',
         headers: {
-          'Authorization': 'Bearer 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',
-          'HTTP-Referer': window.location.origin, // Use current site URL
-          'X-Title': 'My Chatbot',                 // Your app name
+          'Authorization': 'Bearer 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', // Make sure this is your correct API key
+          'HTTP-Referer': '<YOUR_SITE_URL>', // Replace with your site URL
+          'X-Title': '<YOUR_SITE_NAME>',     // Replace with your site name
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model: 'deepseek/deepseek-chat', // Removed ':free'
+          model: 'deepseek/deepseek-chat-v3.1:free',
           messages: updatedMessages,
         }),
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
+        const errorData = await response.json(); // Attempt to get more detailed error
         console.error("OpenRouter API Error:", errorData);
         throw new Error(`OpenRouter API error: ${response.status} - ${errorData.message || 'Failed to get response'}`);
       }
@@ -96,7 +96,8 @@ const App = () => {
           role: 'assistant',
           content: `Error: ${data.error.message || 'Failed to get response from the chatbot.'}`
         }]);
-      } else {
+      }
+      else {
         setMessages(prevMessages => [...prevMessages, { role: 'assistant', content: 'Sorry, no response from the chatbot.' }]);
       }
     } catch (error) {
@@ -104,13 +105,6 @@ const App = () => {
       setMessages(prevMessages => [...prevMessages, { role: 'assistant', content: 'Sorry, I encountered an error. Please try again.' }]);
     } finally {
       setLoading(false);
-    }
-  };
-
-  // Handle Enter key press
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter' && !loading) {
-      handleSendMessage();
     }
   };
 
@@ -125,6 +119,7 @@ const App = () => {
       <div className="desktop-header">
         <h1>My Chatbot</h1>
       </div>
+
 
       <div className="main-container" ref={mainContainerRef}>
         {/* Sidebar */}
@@ -150,6 +145,7 @@ const App = () => {
             {messages.length === 0 && (
               <div className="welcome-message">
                 <h2 style={{
+                  // fontSize: '2.5rem',
                   fontWeight: 'bold',
                   color: '#4CAF50',
                   marginBottom: '1rem',
@@ -190,12 +186,9 @@ const App = () => {
               type="text"
               value={userInput}
               onChange={(e) => setUserInput(e.target.value)}
-              onKeyPress={handleKeyPress}
               placeholder="Ask me anything..."
             />
-            <button onClick={handleSendMessage} disabled={loading}>
-              {loading ? 'Sending...' : 'Send'}
-            </button>
+            <button onClick={handleSendMessage} disabled={loading}>Send</button>
           </div>
         </div>
       </div>
