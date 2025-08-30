@@ -10,8 +10,8 @@ const App = () => {
   const sidebarRef = useRef(null);
   const mainContainerRef = useRef(null);
   const hamburgerRef = useRef(null);
-  const chatAreaRef = useRef(null); // Ref for the chat area
-  const messagesEndRef = useRef(null); // Ref to the end of the messages
+  const chatAreaRef = useRef(null);
+  const messagesEndRef = useRef(null);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -51,7 +51,6 @@ const App = () => {
     };
   }, []);
 
-  // Scroll to bottom whenever messages change
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -66,12 +65,19 @@ const App = () => {
     setLoading(true);
 
     try {
+      // Use Vite environment variables
+      const apiKey = import.meta.env.VITE_OPENROUTER_API_KEY;
+      
+      if (!apiKey) {
+        throw new Error('API key not found. Please set VITE_OPENROUTER_API_KEY in your .env file.');
+      }
+
       const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
         method: 'POST',
         headers: {
-          'Authorization': 'Bearer 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', // Make sure this is your correct API key
-          'HTTP-Referer': '<YOUR_SITE_URL>', // Replace with your site URL
-          'X-Title': '<YOUR_SITE_NAME>',     // Replace with your site name
+          'Authorization': `Bearer ${apiKey}`,
+          'HTTP-Referer': import.meta.env.VITE_SITE_URL || 'http://localhost:3000',
+          'X-Title': import.meta.env.VITE_SITE_NAME || 'My ChatBot',
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
@@ -81,7 +87,7 @@ const App = () => {
       });
 
       if (!response.ok) {
-        const errorData = await response.json(); // Attempt to get more detailed error
+        const errorData = await response.json();
         console.error("OpenRouter API Error:", errorData);
         throw new Error(`OpenRouter API error: ${response.status} - ${errorData.message || 'Failed to get response'}`);
       }
@@ -102,7 +108,7 @@ const App = () => {
       }
     } catch (error) {
       console.error('Error fetching data:', error);
-      setMessages(prevMessages => [...prevMessages, { role: 'assistant', content: 'Sorry, I encountered an error. Please try again.' }]);
+      setMessages(prevMessages => [...prevMessages, { role: 'assistant', content: `Sorry, I encountered an error: ${error.message}` }]);
     } finally {
       setLoading(false);
     }
@@ -113,13 +119,18 @@ const App = () => {
     setSidebarOpen(false);
   };
 
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && !loading) {
+      handleSendMessage();
+    }
+  };
+
   return (
     <>
       {/* Top Header for Desktop */}
       <div className="desktop-header">
         <h1>My Chatbot</h1>
       </div>
-
 
       <div className="main-container" ref={mainContainerRef}>
         {/* Sidebar */}
@@ -145,7 +156,6 @@ const App = () => {
             {messages.length === 0 && (
               <div className="welcome-message">
                 <h2 style={{
-                  // fontSize: '2.5rem',
                   fontWeight: 'bold',
                   color: '#4CAF50',
                   marginBottom: '1rem',
@@ -178,7 +188,7 @@ const App = () => {
                 <span></span>
               </div>
             )}
-            <div ref={messagesEndRef} /> {/* Invisible element at the end of messages */}
+            <div ref={messagesEndRef} />
           </div>
 
           <div className="input-container">
@@ -186,6 +196,7 @@ const App = () => {
               type="text"
               value={userInput}
               onChange={(e) => setUserInput(e.target.value)}
+              onKeyPress={handleKeyPress}
               placeholder="Ask me anything..."
             />
             <button onClick={handleSendMessage} disabled={loading}>Send</button>
